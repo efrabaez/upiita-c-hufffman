@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX_LIMIT 50
+#include <ctype.h>
+#define MAX_LIMIT 1000
 
 
  /*Definimos estructura*/
@@ -38,8 +39,9 @@ int main(){
 }
 
 void menu(){
-  char sentence[MAX_LIMIT];
+  char sentence[MAX_LIMIT], fileName[20], c;
   int opt = 0, i=0;
+  FILE *fp;
 
   do{
     printf("1.- Encode\n2.- Show encode\n3.- Decode\n4.- Show decode\n(-1).- Exit");
@@ -50,11 +52,56 @@ void menu(){
 
     switch (opt) {
       case 1:
-        printf("Type sentence to encode:");     
-        scanf ("%[^\n]%*c", sentence);
-        strupr(sentence);
-        printf("The string in upper case: %s\n", sentence);
-        frequencyTable(sentence);
+        printf("1.-Type sentence\n2.-Open from file\nType your choice: ");
+        scanf("%i", &opt);
+        fflush( stdin );
+        switch (opt) {
+          case 1:
+            printf("Type sentence to encode:");     
+            scanf ("%[^\n]%*c", sentence);
+            while(sentence[i] != '\0'){
+              sentence[i] = toupper(sentence[i]);
+              if (sentence[i] == ' ') {
+                sentence[i] = '_';
+              }
+              i++;
+            }
+            
+            printf("The string in upper case: %s\n", sentence);
+            frequencyTable(sentence);
+          break;
+          case 2:
+            printf( "Type file name: " );
+            gets(fileName);
+            strcat(fileName, ".txt");
+            puts(fileName);
+            fp = fopen(fileName, "r");
+            if ( fp == NULL ) {
+              printf ( "Could not open file %s", fileName) ;
+            }
+            printf( "Reading the file %s", fileName ) ;
+            while ( 1 ) {
+              c = fgetc ( fp ) ; // reading the file
+              if (c == EOF){
+                break ;
+              }
+              sentence[i] = c;
+              i++;
+            }
+            i=0;
+            while(sentence[i] != '\0'){
+              sentence[i] = toupper(sentence[i]);
+              if (sentence[i] == ' ') {
+                sentence[i] = '_';
+              }
+              i++;
+            }
+            printf("The string in upper case: %s\n", sentence);
+            frequencyTable(sentence);            
+            fclose ( fp ) ; // Closing the file
+
+          break;
+        }
 
       break;
       case 2:
@@ -177,6 +224,11 @@ void showAll(Node *_list){
     _list = _list->right;
   } 
 }
+
+
+
+
+
 
 /*Inicio bloque de Huffman*/
 
