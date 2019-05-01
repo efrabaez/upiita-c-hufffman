@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
+ 
 
 typedef struct _Nodo{
 	char letter;
