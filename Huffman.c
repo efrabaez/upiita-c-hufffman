@@ -67,96 +67,77 @@ Tree *registerBST(List **,Tree *);
 
 int main() {
   FILE *archivo;
-    List *l =NULL ,*l2=NULL,*LB=NULL;
-    Tree *r =NULL,*rb = NULL;
-    char frase[100];
-    int opc = 0;
+    List *list = NULL ,*listAux = NULL,*binaryList= NULL;
+    Tree *root = NULL,*binaryRoot = NULL;
+    char sentence[500];
+    int opt = 0;
 
     do{
-        printf("1.Codificar\n2.Decodificar\n-1.Salir\n\n");
-        scanf("%d",&opc);
-        switch(opc)
-        {
-            case 1:
-                printf("Inserta una frase: \n");
-                fflush(stdin);
-                gets(frase);
-                strupr(frase);
-                l=letters(frase,l);
-                printf("\n\n");
-                show(l,1);
-                l=sortList(l);
-                l2=l;
-                printf("\n\n");
-                show(l2,1);
+      printf("Codigo de Huffman\n1.Codificar\n2.Decodificar\n-1.Salir\nElige la opcion: ");
+      scanf("%i",&opt);
+      switch(opt) {
+        case 1:
+          printf("Inserta una frase: \n");
+          fflush(stdin);
+          gets(sentence);
+          strupr(sentence);
+          list=letters(sentence,list);
+          printf("\n\n");
+          show(list,1);
+          list=sortList(list);
+          listAux=list;
+          printf("\n\n");
+          show(listAux,1);
+          root=pushBST(list,root);
+          printf("\n\n\nLista total\n\n");
+          show(list,1);
+          printf("\n\n");
+          preOrder(root);
+          archivo=fopen("Tree.txt","w");
+          writeBSTFile(root,archivo);
+          fclose(archivo);
+          archivo=fopen("Tree.txt","r");
+          if(archivo==NULL){
+            printf("\nEl archivo no existe\n");
+          }
+          else {
+            binaryList=readBSTFILE(binaryList,archivo);
+          }
+          fclose(archivo);
+          printf("\n\n");
+          show(binaryList,2);
+          printf("\n\nArbol desde lista\n");
+          binaryRoot=registerBST(&binaryList,binaryRoot);
+          preOrder(binaryRoot);
+          printf("\n");
+          showBin(&binaryList);
+          Bin(sentence,&binaryList);
+        break;
+        case 2:
+          binaryList=NULL;
+          binaryRoot=NULL;
+          archivo=fopen("Tree.txt","r"); //Preorder FILE
+          if(archivo==NULL){
+            printf("\nEl archivo no existe\n");
+          }
+          else {
+          binaryList=readBSTFILE(binaryList,archivo);
+          }
+          fclose(archivo);
+          printf("\n\n");
+          show(binaryList,2); 
+          printf("\n\nArbol desde lista\n");
+          binaryRoot=registerBST(&binaryList,binaryRoot);
+          preOrder(binaryRoot);
+          printf("\nCodigo binario\n");
+          showBin(&binaryList);
+          readBinary(&binaryList);
+        break;
+      }
+      system("pause");
+      system("cls");
+    } while(opt!=-1);
 
-                r=pushBST(l,r);
-                printf("\n\n\nLista total\n\n");
-                show(l,1);
-
-                printf("\n\n");
-                preOrder(r);
-
-                archivo=fopen("Arbol.txt","w");
-                writeBSTFile(r,archivo);
-                fclose(archivo);
-
-                archivo=fopen("Arbol.txt","r");
-                if(archivo==NULL){
-                    printf("\nEl archivo no existe\n");
-                }
-                else{
-                    LB=readBSTFILE(LB,archivo);
-                }
-                fclose(archivo);
-
-                printf("\n\n");
-                show(LB,2);
-
-               printf("\n\nArbol desde lista\n");
-                rb=registerBST(&LB,rb);
-                preOrder(rb);
-                printf("\n");
-                showBin(&LB);
-                Bin(frase,&LB);
-            break;
-            case 2:
-                LB=NULL;
-                rb=NULL;
-                //Lee el archivo preorder
-                archivo=fopen("Arbol.txt","r");
-                if(archivo==NULL){
-                    printf("\nEl archivo no existe\n");
-                }
-                else{
-                    LB=readBSTFILE(LB,archivo);
-                }
-                fclose(archivo);
-                printf("\n\n");
-                show(LB,2); //Muestra la lista desde el archivo preorder
-                printf("\n\nArbol desde lista\n");
-                rb=registerBST(&LB,rb);
-                preOrder(rb);
-                printf("\nCodigo binario\n");
-                showBin(&LB); //Muestra los 0 y 1 para cada letra
-
-                readBinary(&LB);
-            break;
-        }
-        system("pause");
-        system("cls");
-    }while(opc!=-1);
-
-    return 0;
-
-
-
-
-
-
-
-
-  system("PAUSE");
   return 0;
 }
 
@@ -292,12 +273,12 @@ void show(List *_list, int _c){
 	}else{
 	  if(_c==1){
       while(_list!=NULL){
-        printf("%c=%d=%d  ",_list->letter,_list->frequency,_list->ptree);
+        printf("%c=%i=%i  ",_list->letter,_list->frequency,_list->ptree);
         _list=_list->next;
       }
 	  }else if(_c==2){
       while(_list!=NULL){
-        printf("%c=%d ",_list->letter,_list->frequency);
+        printf("%c=%i ",_list->letter,_list->frequency);
         _list=_list->next;
       }
     }
@@ -360,10 +341,10 @@ void Bin(char _sentence[],List **_list){
     i++;
   }
   total=i;
-  printf("\nTotal frase:%d ",total);
+  printf("\nTotal frase:%i ",total);
   printf("\n\nFrase binaria\n");
   for(i=0;i<j;i++) {
-    printf("%d",b[i]);
+    printf("%i",b[i]);
   }
     /*Binary to decimal*/
   ax=j;
@@ -386,7 +367,7 @@ void Bin(char _sentence[],List **_list){
       k++;
     }
   }
-  printf("\nvalor ax: %d",ax);
+  printf("\nvalor ax: %i",ax);
   if(ax<8 && ax>=0) {
     for(k=ax;k<8;k++){//Rellena los 0 que hagan falta
       baux[k]=0;
@@ -402,12 +383,12 @@ void Bin(char _sentence[],List **_list){
     dec[c]=d;
   }
   i=0;
-  printf("Valor de c: %d\n",c);
+  printf("Valor de c: %i\n",c);
   printf("\nNumeros decimales\n");
   charac=(char*)malloc(c*sizeof(char));
   for(i=0;i<=c;i++) {
     charac[i]=dec[i];
-    printf("%d ",dec[i]);
+    printf("%i ",dec[i]);
   }
   /* Imprime frase cifrada */
   archivo=fopen("sentenceCode.txt","w");
@@ -420,7 +401,7 @@ void Bin(char _sentence[],List **_list){
 void readBinary(List ** _binaryList){
   List *aux=NULL;
   FILE *fp=NULL;
-  char code[100],t;
+  char code[500],t;
   int i,total=0,*decimal,*binary,k=0,j=0,nt=0;
 
   aux=(*_binaryList);
@@ -436,17 +417,17 @@ void readBinary(List ** _binaryList){
     fclose(fp);
     printf("\n\nCodigo del archivo: \n");
     for(j=0;j<(i-1);j++) {
-      printf("%d ",code[j]);
+      printf("%i ",code[j]);
     }
     decimal=(int*)malloc((i)*sizeof(int));
     total=i;
-    printf("Valor de total: %d\n",total);
+    printf("Valor de total: %i\n",total);
     for(i=0;i<(total-1);i++) {
       decimal[i]=code[i];
       if(decimal[i]<0){
         decimal[i]+=256;
       }
-      printf("%d ",decimal[i]);
+      printf("%i ",decimal[i]);
     }
     //Convirtiendo a binario
     binary=(int*)malloc((total*8)*sizeof(int));
@@ -470,7 +451,6 @@ void readBinary(List ** _binaryList){
       printf("%i",binary[i]);
     }
   }
-  printf("\n%d",i);
   createSentence(&aux,binary,i);
 }
 void showB(Binary **_start){
@@ -498,9 +478,9 @@ void createSentence(List **_list,int _binSentence[],int _total){
     cont=0;
     if(listAux->letter!='-'){
       binaryAux=listAux->pbin;
-      while(binaryAux!=NULL) {
+      while(binaryAux) {
         if(binaryAux->data==_binSentence[i]){
-          if(binaryAux->next==NULL){
+          if(!binaryAux->next){
             sentence[pos1]=listAux->letter;
             pos1++;
             _total-=(cont+1);
@@ -522,7 +502,7 @@ void createSentence(List **_list,int _binSentence[],int _total){
   }
   printf("\nMensaje:\n");
   i=0;
-  while(sentence[i]!=0) {
+  while(sentence[i]!='\0') {
     printf("%c ",sentence[i]);
     i++;
   }  
@@ -557,75 +537,53 @@ Tree *allocateMemoryBST(char _letter, int _frequency){
 	return newNode;
 }
 Tree *pushBST(List *_list, Tree *_root){
-   List *aux, *aux2;
-    Tree *Izq,*Der,*raiz;
-    int suma;
+  List *listAux1=NULL, *listAux2=NULL;
+  Tree *left=NULL,*right=NULL,*root=NULL;
+  int sum =0;
 
-    raiz=_root;
-    aux=_list;
-    while(aux->next!=NULL)
-    {
-        aux2=aux->next;
-        if(aux->ptree==NULL && aux2->ptree==NULL)
-        {
-            Izq=allocateMemoryBST(aux->letter,aux->frequency);
-            //printf("\n%c=%d",Izq->letra,Izq->frecuencia);
-            Der=allocateMemoryBST(aux2->letter,aux2->frequency);
-            //printf("\n%c=%d",Der->letra,Der->frecuencia);
-            raiz=allocateMemoryBST('-',Izq->frequency+Der->frequency);
-            raiz->left=Izq;
-            raiz->right=Der;
-            //printf("%c %d   %c %d",raiz->izquierda->letra,raiz->izquierda->frecuencia,raiz->derecha->letra,raiz->derecha->frecuencia);
-        }
-        if(aux->ptree!=NULL && aux2->ptree!=NULL)
-        {
-            suma=aux->ptree->frequency;
-            //printf("\n%d",suma);
-            suma+=aux2->ptree->frequency;
-            //printf("\n%d",suma);
-            raiz=allocateMemoryBST('-',suma);
-            raiz->left=aux->ptree;
-            raiz->right=aux2->ptree;
-            //printf("%c %d   %c %d",raiz->izquierda->letra,raiz->izquierda->frecuencia,raiz->derecha->letra,raiz->derecha->frecuencia);
-        }
-        if(aux->ptree!=NULL && aux2->ptree==NULL)
-        {
-            Der=allocateMemoryBST(aux2->letter,aux2->frequency);
-            //printf("\n%c=%d",Der->letra,Der->frecuencia);
-            //printf("\n%c=%d",aux->parbol->letra,aux->parbol->frecuencia);
-            suma=aux->ptree->frequency;
-            //printf("\n%d",suma);
-            suma+=Der->frequency;
-            //printf("\n%d",suma);
-            raiz=allocateMemoryBST('-',suma);
-            raiz->left=aux->ptree;
-            raiz->right=Der;
-            //printf("%c %d   %c %d",raiz->izquierda->letra,raiz->izquierda->frecuencia,raiz->derecha->letra,raiz->derecha->frecuencia);
-        }
-        if(aux->ptree==NULL && aux2->ptree!=NULL)
-        {
-            Izq=allocateMemoryBST(aux->letter,aux->frequency);
-            //printf("\n%c=%d",Izq->letra,Izq->frecuencia);
-            raiz=allocateMemoryBST('-',Izq->frequency+aux2->ptree->frequency);
-            raiz->left=Izq;
-            raiz->right=aux2->ptree;
-            //printf("%c %d   %c %d",raiz->izquierda->letra,raiz->izquierda->frecuencia,raiz->derecha->letra,raiz->derecha->frecuencia);
-        }
-        _list=pushLast(raiz->letter,raiz->frequency,_list,raiz);
-        //printf("\n");
-        //Mostrar(li);
-        //printf("\n");
-        _list=sortList(_list);
-        //printf("\n");
-        //Mostrar(li);
-        aux=aux2->next;
+  root=_root;
+  listAux1=_list;
+  while(listAux1->next) {
+    /*Aqui pasa la magia*/
+     listAux2=listAux1->next;
+    if(!listAux1->ptree && !listAux2->ptree) {
+      left=allocateMemoryBST(listAux1->letter,listAux1->frequency);
+      right=allocateMemoryBST(listAux2->letter,listAux2->frequency);
+      root=allocateMemoryBST('-',left->frequency+right->frequency);
+      root->left=left;
+      root->right=right;
     }
-    raiz=aux->ptree;
-    return raiz;
+    if(listAux1->ptree && listAux2->ptree) {
+      sum=listAux1->ptree->frequency;
+      sum+=listAux2->ptree->frequency;
+      root=allocateMemoryBST('-',sum);
+      root->left=listAux1->ptree;
+      root->right=listAux2->ptree;
+    }
+    if(listAux1->ptree && !listAux2->ptree) {
+      right=allocateMemoryBST(listAux2->letter,listAux2->frequency);
+      sum=listAux1->ptree->frequency;
+      sum+=right->frequency;
+      root=allocateMemoryBST('-',sum);
+      root->left=listAux1->ptree;
+      root->right=right;
+    }
+    if(!listAux1->ptree && listAux2->ptree) {
+      left=allocateMemoryBST(listAux1->letter,listAux1->frequency);
+      root=allocateMemoryBST('-',left->frequency+listAux2->ptree->frequency);
+      root->left=left;
+      root->right=listAux2->ptree;
+    }
+    _list=pushLast(root->letter,root->frequency,_list,root);
+    _list=sortList(_list);
+    listAux1=listAux2->next;
+  }
+  root=listAux1->ptree;
+  return root;
 }
 void preOrder(Tree *_tree){
   if(_tree){
-    printf("%c%d",_tree->letter,_tree->frequency);
+    printf("%c|%i->",_tree->letter,_tree->frequency);
     preOrder(_tree->left);
     preOrder(_tree->right);
   }
@@ -633,7 +591,7 @@ void preOrder(Tree *_tree){
 
 void writeBSTFile(Tree *_tree,FILE *_fp){
   if(_tree!=NULL) {
-    fprintf(_fp,"%c %d ", _tree->letter, _tree->frequency);
+    fprintf(_fp,"%c %i ", _tree->letter, _tree->frequency);
     writeBSTFile(_tree->left, _fp);
     writeBSTFile(_tree->right, _fp);
   }  
@@ -648,7 +606,7 @@ List *readBSTFILE(List *_list,FILE *_fp){
       return _list;
     }
     fscanf(_fp,"%c",&space);
-    fscanf(_fp,"%d",&frequency);
+    fscanf(_fp,"%i",&frequency);
     fscanf(_fp,"%c",&space);
     _list=pushLast(letter, frequency, _list, NULL);
     l2=letter;
